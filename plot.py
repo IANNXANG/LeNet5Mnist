@@ -16,8 +16,8 @@ def main(model_name):
     plt.savefig(f'loss_plot_{model_name}.png')
 
 if __name__ == '__main__':
-    main("LeNet5")
-    main("LeNet5Sigmoid")
-    main("LeNet5HalfKernels")
-    main("LeNet5WithDropout10")
-    main("LeNet5WithDropout20")
+    main("LeNet5") #原始LeNet5
+    main("LeNet5Sigmoid") #使用sigmoid激活函数代替ReLU
+    main("LeNet5HalfKernels") #使用一半的卷积核
+    main("LeNet5WithDropout10") #使用dropout10%
+    main("LeNet5WithDropout20") #使用dropout20%

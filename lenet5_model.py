@@ -114,7 +114,6 @@ class LeNet5WithDropout10(nn.Module):
         x = self.fc3(x)
         return F.log_softmax(x, dim=1)
 
-
 class LeNet5WithDropout20(nn.Module):
     def __init__(self):
         super(LeNet5WithDropout20, self).__init__()
