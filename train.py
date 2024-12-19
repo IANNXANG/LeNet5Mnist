@@ -1,11 +1,11 @@
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-from lenet5_model import LeNet5, LeNet5Sigmoid, LeNet5HalfKernels, LeNet5WithDropout10, LeNet5WithDropout20
+from lenet5_model import LeNet5, LeNet5Sigmoid, LeNet5HalfKernels, LeNet5WithDropout10, LeNet5WithDropout20, LeNet5For20x20
 import torch.optim as optim
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
-import numpy as np
+import os
+import cv2
 
 
 def train(model, device, train_loader, optimizer, epoch, model_name):
@@ -33,10 +33,18 @@ def main(model_name):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
 
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
-    ])
+    if model_name == "LeNet5For20x20":
+        transform = transforms.Compose([
+            transforms.Resize((20, 20)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+        ])
+    else:
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+        ])
+
 
     dataset_train = datasets.MNIST('./data', train=True, download=True, transform=transform)
     train_loader = DataLoader(dataset_train, batch_size=64, shuffle=True)
@@ -51,6 +59,8 @@ def main(model_name):
         model = LeNet5WithDropout10().to(device)
     elif model_name == "LeNet5WithDropout20":
         model = LeNet5WithDropout20().to(device)
+    elif model_name == "LeNet5For20x20":
+        model = LeNet5For20x20().to(device)
 
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 
@@ -62,9 +72,17 @@ def main(model_name):
 
 
 if __name__ == '__main__':
+    if not os.path.exists('./log'):
+        os.makedirs('./log')
+
+    if not os.path.exists('./model'):
+        os.makedirs('./model')
+
+
     main("LeNet5") #原始LeNet5
     main("LeNet5Sigmoid") #使用sigmoid激活函数代替ReLU
     main("LeNet5HalfKernels") #使用一半的卷积核
     main("LeNet5WithDropout10") #使用dropout10%
     main("LeNet5WithDropout20") #使用dropout20%
+    main("LeNet5For20x20") #使用20x20的图片
 
