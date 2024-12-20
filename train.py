@@ -1,7 +1,7 @@
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-from lenet5_model import LeNet5, LeNet5Sigmoid, LeNet5HalfKernels, LeNet5WithDropout10, LeNet5WithDropout20, LeNet5For20x20
+from lenet5_model import LeNet5, LeNet5Sigmoid, LeNet5HalfKernels, LeNet5WithDropout10, LeNet5WithDropout20, LeNet5For20x20, LeNet5Tanh
 import torch.optim as optim
 import torch.nn.functional as F
 import os
@@ -29,6 +29,24 @@ def train(model, device, train_loader, optimizer, epoch, model_name):
             f.write(f"{loss}\n")
 
 
+def model_select(model_name, device):
+    if model_name == "LeNet5":
+        model = LeNet5().to(device)
+    elif model_name == "LeNet5Sigmoid":
+        model = LeNet5Sigmoid().to(device)
+    elif model_name == "LeNet5Tanh":
+        model = LeNet5Tanh().to(device)
+    elif model_name == "LeNet5HalfKernels":
+        model = LeNet5HalfKernels().to(device)
+    elif model_name == "LeNet5WithDropout10":
+        model = LeNet5WithDropout10().to(device)
+    elif model_name == "LeNet5WithDropout20":
+        model = LeNet5WithDropout20().to(device)
+    elif model_name == "LeNet5For20x20":
+        model = LeNet5For20x20().to(device)
+
+    return model
+
 def main(model_name):
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda" if use_cuda else "cpu")
@@ -49,20 +67,14 @@ def main(model_name):
     dataset_train = datasets.MNIST('./data', train=True, download=True, transform=transform)
     train_loader = DataLoader(dataset_train, batch_size=64, shuffle=True)
 
-    if model_name == "LeNet5":
-        model = LeNet5().to(device)
-    elif model_name == "LeNet5Sigmoid":
-        model = LeNet5Sigmoid().to(device)
-    elif model_name == "LeNet5HalfKernels":
-        model = LeNet5HalfKernels().to(device)
-    elif model_name == "LeNet5WithDropout10":
-        model = LeNet5WithDropout10().to(device)
-    elif model_name == "LeNet5WithDropout20":
-        model = LeNet5WithDropout20().to(device)
-    elif model_name == "LeNet5For20x20":
-        model = LeNet5For20x20().to(device)
 
-    optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
+
+    model = model_select(model_name, device)
+
+
+    lr = 0.01
+
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.5)
 
     for epoch in range(1, 11):  # 训练10个周期
         train(model, device, train_loader, optimizer, epoch, model_name)

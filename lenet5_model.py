@@ -27,6 +27,32 @@ class LeNet5(nn.Module):
         x = self.fc3(x)
         return F.log_softmax(x, dim=1)
 
+class LeNet5Tanh(nn.Module):
+    def __init__(self):
+        super(LeNet5Tanh, self).__init__()
+        # 第一层卷积层，输入1通道图像，输出6个特征图，核大小5x5
+        self.conv1 = nn.Conv2d(1, 6, kernel_size=5)
+        # 第二层卷积层，输入6个特征图，输出16个特征图，核大小5x5
+        self.conv2 = nn.Conv2d(6, 16, kernel_size=5)
+        # 全连接层，输入16*4*4个神经元，输出120个神经元
+        self.fc1 = nn.Linear(16 * 4 * 4, 120)
+        # 全连接层，输入120个神经元，输出84个神经元
+        self.fc2 = nn.Linear(120, 84)
+        # 输出层，输入84个神经元，输出10个类别概率
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        # 输入图像尺寸: [batch_size, 1, 28, 28]
+        x = F.tanh(self.conv1(x))
+        x = F.max_pool2d(x, 2)  # 池化层
+        x = F.tanh(self.conv2(x))
+        x = F.max_pool2d(x, 2)  # 池化层
+        x = x.view(-1, 16 * 4 * 4)  # 展平
+        x = F.tanh(self.fc1(x))
+        x = F.tanh(self.fc2(x))
+        x = self.fc3(x)
+        return F.log_softmax(x, dim=1)
+
 class LeNet5Sigmoid(nn.Module):
     def __init__(self):
         super(LeNet5Sigmoid, self).__init__()

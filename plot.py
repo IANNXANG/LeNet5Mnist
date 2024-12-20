@@ -21,8 +21,11 @@ def main(model_name):
 if __name__ == '__main__':
     if not os.path.exists('./png'):
         os.makedirs('./png')
+
     main("LeNet5") #原始LeNet5
     main("LeNet5Sigmoid") #使用sigmoid激活函数代替ReLU
+    main("LeNet5Tanh")  # 使用tanh激活函数代替ReLU
     main("LeNet5HalfKernels") #使用一半的卷积核
     main("LeNet5WithDropout10") #使用dropout10%
     main("LeNet5WithDropout20") #使用dropout20%
+    main("LeNet5For20x20") #使用20x20的图片
